@@ -185,13 +185,17 @@
 	//     }
 	//   }
 	// });
-	ReactDOM.render(React.createElement(_MyList.MyComponentList, null), document.getElementById('root'));
+	ReactDOM.render(React.createElement(_MyList.MyComponent, null), document.getElementById('root'));
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -200,28 +204,46 @@
 	var MyComponentList = React.createClass({
 		displayName: 'MyComponentList',
 	
-		getDefaultProps: function getDefaultProps() {
-			return { dataList: ['朱二狗', '赵尼玛'] };
-		},
 		render: function render() {
+			var itemList = [];
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+	
+			try {
+				for (var _iterator = this.props.dataList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var _step$value = _slicedToArray(_step.value, 2);
+	
+					var key = _step$value[0];
+					var value = _step$value[1];
+	
+					itemList.push(React.createElement(MyComponentItem, _extends({}, this.props, { key: key, id: key, value: value })));
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+	
 			return React.createElement(
 				'ul',
 				null,
-				this.props.dataList.map(function (item) {
-					return React.createElement(MyComponentItem, { value: item });
-				})
+				itemList
 			);
 		}
 	});
 	var MyComponentItem = React.createClass({
 		displayName: 'MyComponentItem',
 	
-		getDefaultProps: function getDefaultProps() {
-			return { value: '' };
-		},
-		deleteClick: function deleteClick(e) {
-			e.target.innerText = '已删除';
-		},
 		render: function render() {
 			return React.createElement(
 				'li',
@@ -230,21 +252,60 @@
 				' ',
 				React.createElement(
 					'a',
-					{ href: 'javascript:;', onClick: this.deleteClick },
+					{ href: 'javascript:;', id: this.props.id, onClick: this.props.handleDelete },
 					'删除'
 				)
 			);
 		}
 	});
+	
 	var MyComponentInput = React.createClass({
 		displayName: 'MyComponentInput',
 	
-		inputClick: function inputClick(e) {},
 		render: function render() {
-			return React.createElement('input', { type: 'text' });
+			return React.createElement('input', { type: 'text', ref: 'myInput', defaultValue: 'fuck' });
 		}
 	});
-	exports.MyComponentList = MyComponentList;
+	
+	var MyComponentAdd = React.createClass({
+		displayName: 'MyComponentAdd',
+	
+		render: function render() {
+			return React.createElement('input', { type: 'button', value: 'add', onClick: this.props.handleAdd });
+		}
+	});
+	
+	var MyComponent = React.createClass({
+		displayName: 'MyComponent',
+	
+		getDefaultProps: function getDefaultProps() {
+			return { dataList: new Map([[1, '朱二狗'], [2, '赵尼玛']]) };
+		},
+		getInitialState: function getInitialState() {
+			return { hasNewItem: false };
+		},
+		handleAdd: function handleAdd() {
+			var value = this.refs.myTextInput.refs.myInput.value;
+			var lastKey = this.props.dataList.size + 1;
+			this.props.dataList.set(lastKey, value);
+			this.setState({ hasNewItem: !this.state.hasNewItem });
+		},
+		handleDelete: function handleDelete(e) {
+			var id = parseInt(e.target.id);
+			var hasDel = this.props.dataList.delete(id);
+			this.setState({ hasNewItem: !this.state.hasNewItem });
+		},
+		render: function render() {
+			return React.createElement(
+				'div',
+				null,
+				React.createElement(MyComponentList, _extends({}, this.props, { handleDelete: this.handleDelete })),
+				React.createElement(MyComponentInput, { ref: 'myTextInput' }),
+				React.createElement(MyComponentAdd, { handleAdd: this.handleAdd })
+			);
+		}
+	});
+	exports.MyComponent = MyComponent;
 
 /***/ },
 /* 2 */

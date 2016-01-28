@@ -1,7 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-import {MyComponentList as MyList} from './MyList';
+import {MyComponent as MyList} from './MyList';
 // var $ = require('jQuery');
 // var nameList=[<h1>朱二狗</h1>,<h1>赵尼玛</h1>];
 // var HelloMessage=React.createClass({

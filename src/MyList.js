@@ -1,35 +1,57 @@
 let React = require('react'); 
 let MyComponentList=React.createClass({
-	getDefaultProps:function(){
-		return {dataList:['朱二狗','赵尼玛']}
-	},
 	render:function(){
+		let itemList = [];
+		for(let [key,value] of this.props.dataList){
+			itemList.push(<MyComponentItem {...this.props} key={key} id={key} value={value}/>);
+		}
 		return <ul>
-					{
-						this.props.dataList.map(function(item){
-							return <MyComponentItem value={item}/>
-						})
-					}
+					{itemList}
 				</ul>
 	}
 })
 let MyComponentItem = React.createClass({
-	getDefaultProps:function(){
-		return {value:''}
-	},
-	deleteClick:function(e){
-		e.target.innerText='已删除'
-	},
 	render:function(){
-		return <li>{this.props.value} <a href='javascript:;' onClick={this.deleteClick}>删除</a></li>
+		return <li>{this.props.value} <a href='javascript:;' id={this.props.id} onClick={this.props.handleDelete}>删除</a></li>
 	}
-})
-let MyComponentInput = React.createClass({
-	inputClick:function(e){
+});
 
-	},
+let MyComponentInput = React.createClass({
 	render:function(){
-		return <input type="text"/>
+		return <input type="text" ref="myInput" defaultValue="fuck"/>
 	}
-}) 
-export {MyComponentList}
+}); 
+
+let MyComponentAdd = React.createClass({
+	render:function(){
+		return <input type="button" value="add" onClick={this.props.handleAdd}/>
+	}
+});
+
+let MyComponent = React.createClass({
+	getDefaultProps:function(){
+		return {dataList:new Map([[1,'朱二狗'],[2,'赵尼玛']])}
+	},
+	getInitialState:function(){
+		return {hasNewItem:false}
+	},
+	handleAdd:function(){
+		let value = this.refs.myTextInput.refs.myInput.value;
+		let lastKey = this.props.dataList.size+1;
+		this.props.dataList.set(lastKey,value);
+		this.setState({hasNewItem:!this.state.hasNewItem});
+	},
+	handleDelete:function(e){
+		let id = parseInt(e.target.id);
+		let hasDel = this.props.dataList.delete(id);
+		this.setState({hasNewItem:!this.state.hasNewItem})
+	},
+	render:function(){		
+		return <div>
+				<MyComponentList {...this.props} handleDelete={this.handleDelete}/>
+				<MyComponentInput ref="myTextInput"/>
+				<MyComponentAdd handleAdd={this.handleAdd}/>
+		</div>
+	}
+});
+export {MyComponent}
